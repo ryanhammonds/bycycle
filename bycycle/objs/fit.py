@@ -158,6 +158,8 @@ class BycycleGroup:
     ----------
     dfs_features : list of pandas.DataFrame or list of list of pandas.DataFrame
         Dataframe containing shape and burst features for each cycle.
+    bms : list of Bycycle objects
+        Individual Bycycle objects.
     sigs : 2d or 3d array
         Voltage time series.
     fs : float
@@ -247,6 +249,7 @@ class BycycleGroup:
 
         # Results
         self.dfs_features = []
+        self.bms = []
 
 
     def __len__(self):
@@ -326,10 +329,12 @@ class BycycleGroup:
                                 self.axis, self.return_samples, self.n_jobs, progress)
 
         # Initialize lists
-        if  self.sigs.ndim == 3:
-            self.dfs_features = np.zeros((len(features), len(features[0]))).tolist()
+        if self.sigs.ndim == 3:
+            self.dfs_features = [[0] * len(features[0])] * len(features)
+            self.bms = [[0] * len(features[0])] * len(features)
         else:
-            self.dfs_features = np.zeros(len(features)).tolist()
+            self.dfs_features = [0] * len(features)
+            self.bms = [0] * len(features)
 
         # Convert dataframes to Bycycle objects
         for dim0, sig in enumerate(self.sigs):
@@ -345,7 +350,9 @@ class BycycleGroup:
                     bm.load(features[dim0][dim1], sig_, self.fs, self.f_range)
 
                     # Set
-                    self.dfs_features[dim0][dim1] = bm
+                    self.bms[dim0][dim1] = bm
+                    self.dfs_features[dim0][dim1] = bm.df_features
+
 
             else:
 
@@ -356,4 +363,5 @@ class BycycleGroup:
                 bm.load(features[dim0], sig, self.fs, self.f_range)
 
                 # Set
-                self.dfs_features[dim0] = bm
+                self.bms[dim0] = bm
+                self.dfs_features[dim0] = bm.df_features

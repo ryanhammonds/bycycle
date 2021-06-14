@@ -132,7 +132,7 @@ def compute_features_2d(sigs, fs, f_range, compute_features_kwargs=None, axis=0,
 
         center_extrema = kwargs[0].pop('center_extrema', 'peak')
 
-        df_flat = compute_features(sig_flat, fs=fs, f_range=f_range, return_samples=True,
+        df_flat = compute_features(sig_flat, fs=fs, f_range=f_range, return_samples=return_samples,
                                    center_extrema=center_extrema, **kwargs[0])
 
         dfs_features = epoch_df(df_flat, len(sig_flat), len(sigs[0]))
